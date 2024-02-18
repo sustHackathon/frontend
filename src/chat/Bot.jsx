@@ -1,0 +1,50 @@
+import React from 'react'
+import { useState } from 'react'
+import { IP_ADDRESS } from '../global/constant'
+
+function Bot() {
+
+    const [question, setQuestion] = useState('')
+    const [data, setData] = useState(null)
+
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const endpoint = `http://${IP_ADDRESS}/chatBot?question=${question}`;
+        fetch(`${endpoint}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          //body: JSON.stringify(formData),
+        })
+          .then((res) => res.text())
+          .then((data) => {
+            if (data.detail == "empty") {
+              setData(null);
+            } else {
+              setData(data);
+              console.log(data);
+            }
+          });
+    }
+  return (
+    <div className='p-3 max-w-7xl mx-auto'>
+        <form action="" className='flex flex-col' onSubmit={handleSubmit}>
+            <input type="text" placeholder="Ask a question" value={question} onChange={(e) => setQuestion(e.target.value)} className="p-3 rounded-lg bg-slate-100 mt-2" id="question" required></input>
+            <button className='bg-blue-800 text-white py-2 rounded-lg
+                        uppercase hover:opacity-90 mt-3'>Submit</button>
+        </form>
+        <div className="p-4 border border-gray-300 shadow-xl rounded-md ">
+            {data && (
+              <div className="font-md"
+                dangerouslySetInnerHTML={{ __html: data }}
+                style={{ whiteSpace: "pre-wrap" }} // This preserves line breaks
+              />
+            )}
+          </div>
+    </div>
+  )
+}
+
+export default Bot
